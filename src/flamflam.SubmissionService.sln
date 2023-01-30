@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "flamflam.SubmissionService", "flamflam.SubmissionService\flamflam.SubmissionService.csproj", "{091CE49B-B960-441A-9864-AC29B6DB4FA0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "flamflam.SubmissionServiceTests", "flamflam.SubmissionServiceTests\flamflam.SubmissionServiceTests.csproj", "{8C94F662-9FFB-4935-A946-10E300C5EE5A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{091CE49B-B960-441A-9864-AC29B6DB4FA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{091CE49B-B960-441A-9864-AC29B6DB4FA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{091CE49B-B960-441A-9864-AC29B6DB4FA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{091CE49B-B960-441A-9864-AC29B6DB4FA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C94F662-9FFB-4935-A946-10E300C5EE5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C94F662-9FFB-4935-A946-10E300C5EE5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C94F662-9FFB-4935-A946-10E300C5EE5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C94F662-9FFB-4935-A946-10E300C5EE5A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3AAF8515-9800-4C50-8B6E-2154D25908F5}
+	EndGlobalSection
+EndGlobal
