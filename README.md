@@ -7,7 +7,7 @@ You can quickly build & serve the app using the following commands
 
 ```
 cd .\src
-docker build -t submission-service-image -f Dockerfile .
+docker build -t submission-service-image -f flamflam.SubmissionService\Dockerfile .
 docker run -it --rm -p 5000:80 submission-service-image
 ```
 

@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace flamflam.SubmissionService.Contracts
 {
@@ -9,7 +9,7 @@ namespace flamflam.SubmissionService.Contracts
         public string Id { get; set; }
 
         [Required]
-        [JsonPropertyName("created_utc")]
+        [JsonProperty("created_utc")]
         public DateTimeOffset CreatedUtc { get; set; }
     }
 }

@@ -1,7 +1,8 @@
 using flamflam.SubmissionService.Contracts;
+using flamflam.SubmissionService.Setup;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
-using System.Text.Json;
+using Newtonsoft.Json;
 using Program = flamflam.SubmissionService.Program;
 
 namespace flamflam.SubmissionServiceTests.Integration
@@ -44,7 +45,7 @@ namespace flamflam.SubmissionServiceTests.Integration
             var response = await client.PostAsync("/api/submissions", content);
             var responseContentString = await response.Content.ReadAsStringAsync();
 
-            var submission = JsonSerializer.Deserialize<Submission>(responseContentString, TestConstants.JsonSerializerOptions);
+            var submission = JsonConvert.DeserializeObject<Submission>(responseContentString, Json.DefaultSettings);
 
             // Assert
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
