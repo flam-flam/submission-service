@@ -28,7 +28,8 @@ namespace flamflam.SubmissionService.Controllers
         
         public IActionResult GetAsync([SwaggerParameter("Submission id", Required = true)]string id)
         {
-            _logger.LogInformation($"Submission with id '{id}' requested");
+            var requestReceived = "{\"event\":\"requested\",\"data\":\"Submission with id "+id+" requested\"}";
+            _logger.LogInformation(requestReceived);
             return NotFound();
         }
 
@@ -42,8 +43,8 @@ namespace flamflam.SubmissionService.Controllers
         public IActionResult PostAsync(Submission submission)
         {
             var payloadAsJson = JsonConvert.SerializeObject(submission, Json.DefaultSettings);
-            _logger.LogInformation($"New submissions posted: {payloadAsJson}");
-
+            var dataReceived = "{\"event\":\"received\",\"data\":"+payloadAsJson+"}";
+            _logger.LogInformation(dataReceived);
             return CreatedAtAction("Get", new { id = submission.Id }, submission);
         }
     }
