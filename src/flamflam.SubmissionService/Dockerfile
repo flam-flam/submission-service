@@ -6,11 +6,9 @@ EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+COPY . /src
 WORKDIR /src
-COPY ["flamflam.SubmissionService/flamflam.SubmissionService.csproj", "flamflam.SubmissionService/"]
-RUN dotnet restore "flamflam.SubmissionService/flamflam.SubmissionService.csproj"
-COPY . .
-WORKDIR "/src/flamflam.SubmissionService"
+RUN dotnet restore "flamflam.SubmissionService.csproj"
 RUN dotnet build "flamflam.SubmissionService.csproj" -c Release -o /app/build
 
 FROM build AS publish
