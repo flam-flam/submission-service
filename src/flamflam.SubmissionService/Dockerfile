@@ -5,14 +5,16 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/nightly/sdk:8.0-preview AS build
+ARG TARGETARCH
 COPY . /src
 WORKDIR /src
-RUN dotnet restore "flamflam.SubmissionService.csproj"
-RUN dotnet build "flamflam.SubmissionService.csproj" -c Release -o /app/build
+RUN dotnet restore "flamflam.SubmissionService.csproj" -a $TARGETARCH
+RUN dotnet build "flamflam.SubmissionService.csproj" -c Release -a $TARGETARCH -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "flamflam.SubmissionService.csproj" -c Release -o /app/publish /p:UseAppHost=false
+ARG TARGETARCH
+RUN dotnet publish "flamflam.SubmissionService.csproj" -c Release -a $TARGETARCH -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
