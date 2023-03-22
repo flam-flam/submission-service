@@ -1,8 +1,10 @@
-﻿using flamflam.SubmissionService.Contracts;
-using flamflam.SubmissionService.Setup;
-using Microsoft.AspNetCore.JsonPatch.Operations;
+﻿using flamflam.SubmissionService.Core;
+using flamflam.SubmissionService.Core.Errors;
+using flamflam.SubmissionService.Core.Telemetry;
+using flamflam.SubmissionService.Models;
+using flamflam.SubmissionService.Services;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+using MongoDB.Driver;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace flamflam.SubmissionService.Controllers
@@ -10,13 +12,13 @@ namespace flamflam.SubmissionService.Controllers
     [ApiController]
     [Route("api/submissions")]
     [Produces("application/json")]
-    public class SubmissionsController : ControllerBase
+    public class SubmissionsController : ApiController
     {
-        private readonly ILogger _logger;
+        private readonly ISubmissionRepository _repository;
 
-        public SubmissionsController(ILogger<SubmissionsController> logger)
+        public SubmissionsController(ITelemetryReporter<SubmissionsController> telemetry, ISubmissionRepository repository) : base(telemetry)
         {
-            _logger = logger;
+            _repository = repository;
         }
 
         [HttpGet("{id}")]
@@ -25,26 +27,31 @@ namespace flamflam.SubmissionService.Controllers
             Summary = "Gets submission via id",
             OperationId = "submissions/get"
         )]
-        
-        public IActionResult GetAsync([SwaggerParameter("Submission id", Required = true)]string id)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Submission))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiErrorResponse))]
+        public async Task<IActionResult> GetAsync([SwaggerParameter("Submission id", Required = true)] string id)
         {
-            var requestReceived = "{\"event\":\"requested\",\"data\":\"Submission with id "+id+" requested\"}";
-            _logger.LogInformation(requestReceived);
-            return NotFound();
+            Telemetry.TraceInfo("requested", new { message = $"Submission with id {id} requested" });
+
+            var match = await _repository.GetAsync(id);
+            return match != null 
+                ? Ok(match)
+                : NotFound(new ApiErrorResponse(StatusCodes.Status404NotFound, $"Entity with id '{id}' was not found"));
         }
 
         [HttpPost]
         [SwaggerOperation(
-            Summary = "Creates submission",
+            Summary = "Creates submission TEST",
             OperationId = "submissions/create"
         )]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Submission))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult PostAsync(Submission submission)
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ApiErrorResponse))]
+        public async Task<IActionResult> PostAsync(Submission submission)
         {
-            var payloadAsJson = JsonConvert.SerializeObject(submission, Json.DefaultSettings);
-            var dataReceived = "{\"event\":\"received\",\"data\":"+payloadAsJson+"}";
-            _logger.LogInformation(dataReceived);
+            Telemetry.TraceInfo("received", submission);
+
+            await _repository.CreateAsync(submission);
             return CreatedAtAction("Get", new { id = submission.Id }, submission);
         }
     }

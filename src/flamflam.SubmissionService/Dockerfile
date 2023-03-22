@@ -4,6 +4,8 @@ FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
+RUN apt update && apt install -y curl && rm -rf /var/lib/apt/lists/*
+HEALTHCHECK --interval=60s --retries=5 CMD curl --fail http://localhost:80/api/health || exit 1
 
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/nightly/sdk:8.0-preview AS build
 ARG TARGETARCH
