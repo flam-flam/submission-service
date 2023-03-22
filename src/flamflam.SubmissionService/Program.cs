@@ -1,3 +1,9 @@
+using flamflam.SubmissionService.Config;
+using flamflam.SubmissionService.Core.Database;
+using flamflam.SubmissionService.Core.Errors;
+using flamflam.SubmissionService.Core.Telemetry;
+using flamflam.SubmissionService.Services;
+using Microsoft.AspNetCore.Diagnostics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -9,7 +15,9 @@ public partial class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
+        builder.Services.Configure<FlamFlamDbOptions>(
+            builder.Configuration.GetSection(FlamFlamDbOptions.Section));
+
         builder.Services
             .AddControllers()
             .AddNewtonsoftJson(options =>
@@ -19,7 +27,6 @@ public partial class Program
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             });
 
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(options =>
         {
@@ -28,11 +35,49 @@ public partial class Program
 
         builder.Services.AddSwaggerGenNewtonsoftSupport();
 
+        builder.Services.AddScoped(typeof(ITelemetryReporter<>), typeof(TelemetryReporter<>));
+        
+        builder.Services.AddScoped<IMongoDbProvider, MongoDbProvider>();
+        builder.Services.AddScoped<MongoDbExceptionHandler>();
+
+        builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
+
+        builder.Services.AddScoped<DefaultExceptionHandler>();
+        builder.Services.AddScoped<IEnumerable<IAppExceptionHandler>>(sp =>
+        {
+            return new List<IAppExceptionHandler>
+            {
+                sp.GetService<MongoDbExceptionHandler>(),
+                sp.GetService<DefaultExceptionHandler>()
+            };
+        });
+        builder.Services.AddScoped<ExceptionHandlerFacade>();
+
+        builder.Services.AddHealthChecks()
+            .AddCheck<MongoDbConnectionHealthCheck>(MongoDbConnectionHealthCheck.Name);
+
         var app = builder.Build();
 
-        // Configure the HTTP request pipeline.
         app.UseSwagger();
         app.UseSwaggerUI();
+        app.UseExceptionHandler(handler =>
+        {
+            handler.Run(async context =>
+            {
+                var ex = context.Features.Get<IExceptionHandlerFeature>();
+                if (ex == null) return;
+
+                using var scope = handler.ApplicationServices.CreateScope();
+
+                var exceptionHandler = scope.ServiceProvider.GetService<ExceptionHandlerFacade>();
+                if (exceptionHandler == null) return;
+
+                var mapped = exceptionHandler.HandleException(ex.Error);
+
+                context.Response.StatusCode = mapped.Status;
+                await context.Response.WriteAsJsonAsync(mapped);
+            });
+        });
 
         app.UseAuthorization();
 

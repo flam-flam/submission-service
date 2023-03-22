@@ -20,6 +20,7 @@ In order to work the on the application you'd need the following:
     * [dotnet CLI](https://learn.microsoft.com/en-us/dotnet/core/tools/) is installed as part of the SDK
 * [VS Code](https://code.visualstudio.com/) or an alternative editor
 * [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+* [mongodb](https://www.mongodb.com/) connection string
 
 
 ## Tests
@@ -31,3 +32,18 @@ In order to execute the test, run the following commands
 cd .\src
 dotnet test
 ```
+
+## Configuration
+
+In order to get the application to properly function, you'd need to specify the DB configruation. 
+
+This can be done via [appsettings.json](./src/flamflam.SubmissionService/appsettings.json) file, or alternatively via environment variables, example below:
+
+```
+environment:
+    FlamFlamDb:ConnectionString: [Connection string]
+    FlamFlamDb:DatabaseName: [Db name]
+    FlamFlamDb:SubmissionsCollectionName: submissions
+```
+
+> NOTE: if both values in `appsettings.json` & environment variables are supplied, the environment variables will be prioritized. 
