@@ -12,6 +12,6 @@ namespace flamflam.SubmissionService.Models
 
         [Required]
         [JsonProperty("created_utc")]
-        public DateTimeOffset? CreatedUtc { get; set; }
+        public DateTime? CreatedUtc { get; set; }
     }
 }

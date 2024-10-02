@@ -6,7 +6,6 @@ Service listening for submission objects via an API endpoint and saving them to 
 You can quickly build & serve the app using the following commands
 
 ```
-cd .\src
 docker build ./src/flamflam.SubmissionService -t submission-service-image
 docker run -it --rm -p 5000:80 submission-service-image
 ```
