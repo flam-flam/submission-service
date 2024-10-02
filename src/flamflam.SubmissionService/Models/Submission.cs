@@ -13,5 +13,29 @@ namespace flamflam.SubmissionService.Models
         [Required]
         [JsonProperty("created_utc")]
         public DateTime? CreatedUtc { get; set; }
+
+        [Required]
+        [JsonProperty("author")]
+        public string? Author { get; set; }
+
+        [Required]
+        [JsonProperty("title")]
+        public string? Title { get; set; }
+
+        [Required]
+        [JsonProperty("selftext")]
+        public string? SelfText { get; set; }
+
+        [Required]
+        [JsonProperty("score")]
+        public int? Score { get; set; }
+
+        [Required]
+        [JsonProperty("upvote_ratio")]
+        public int? UpvoteRatio { get; set; }
+
+        [Required]
+        [JsonProperty("comment_count")]
+        public int? CommentCount { get; set; }
     }
 }
